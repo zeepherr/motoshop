@@ -1,6 +1,7 @@
 import { resolveMx } from "node:dns/promises";
 import nodeMailer from "nodemailer";
-import { config } from "../config";
+import { config } from "../config/index.js";
+import { OTP_TTL_MS } from "../constant/auth.constant.js";
 
 export const hashValidMailDomain = async (email) => {
   // check real email or not ?
@@ -30,6 +31,7 @@ const transporter = nodeMailer.createTransport({
 });
 
 export const sendRegistrationOtp = async (email, otp) => {
+  const minutes = OTP_TTL_MS / (60 * 1000);
   return transporter.sendMail({
     from: `"HrungMoto" <${config.mail_user}>`,
 
@@ -40,7 +42,7 @@ export const sendRegistrationOtp = async (email, otp) => {
     text: [
       `Your verification code is ${otp}.`,
       "",
-      `This code will expire in ${OTP_EXPIRES_MINUTES} minutes.`,
+      `This code will expire in ${minutes} minutes.`,
       "",
       "If you did not request this registration, you can ignore this email.",
     ].join("\n"),
@@ -54,7 +56,7 @@ export const sendRegistrationOtp = async (email, otp) => {
 
       <p>
         This code will expire in
-        <strong>${OTP_EXPIRES_MINUTES} minutes</strong>.
+        <strong>${minutes} minutes</strong>.
       </p>
 
       <p>

@@ -1,4 +1,7 @@
+import createHttpError from "http-errors";
+import { PENDING_REGISTRATION_RETENTION_MS } from "../../constant/auth.constant.js";
 import { prisma } from "../../lib/primsa.js";
+import { createUser, getUserBy } from "./user.service.js";
 export const savePendingRegistration = async (data) => {
   //using upsert if existing user -> update data , if not --> create new
   return prisma.pendingRegistration.upsert({
@@ -21,6 +24,100 @@ export const savePendingRegistration = async (data) => {
       expiresAt: data.expiresAt,
       attempts: 0,
       lastSentAt: new Date(),
+    },
+  });
+};
+
+export const findPendingUser = async (UserEmail) => {
+  return await prisma.pendingRegistration.findUnique({
+    where: { email: UserEmail },
+  });
+};
+export const deletePending = async (pendingId) => {
+  await prisma.pendingRegistration.delete({
+    where: { id: pendingId },
+  });
+};
+
+export const createUserFromPending = async (pending) => {
+  const user = await prisma.$transaction(async (tx) => {
+    const existingUser = await getUserBy("email", pending.email);
+    if (existingUser) {
+      await deletePending(pending.id);
+      throw createHttpError(409, "This email is already registered!");
+    }
+    const newUser = await createUser({
+      data: {
+        email: pending.email,
+        firstName: pending.firstName,
+        lastName: pending.lastName,
+        password: pending.passwordHash,
+        emailVerifiedAt: new Date(),
+      },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        emailVerifiedAt: true,
+      },
+    });
+    await deletePending(pending.id);
+    return newUser;
+  });
+  return user;
+};
+
+export const cleanExpirePending = async () => {
+  const timeOut = new Date(Date.now() - PENDING_REGISTRATION_RETENTION_MS);
+  return prisma.pendingRegistration.deleteMany({
+    where: { updatedAt: { lt: timeOut } },
+  });
+};
+
+export const getPendingByEmail = async (pendingEmail) => {
+  return prisma.pendingRegistration.findUnique({
+    where: { email: pendingEmail },
+  });
+};
+
+export const updatePendingOtp = async (data) => {
+  await prisma.pendingRegistration.update({
+    where: { email: data.email },
+    data: {
+      otpHash: data.otpHash,
+      expiresAt: data.expiresAt,
+      attempts: 0, //restart attempts if new otp
+      lastSentAt: new Date(),
+    },
+  });
+};
+
+export const createAuthSession = async (user, refreshToken) => {
+  return prisma.authSession.create({
+    data: {
+      userId: user.id,
+      refreshToken,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), //7 days
+    },
+  });
+};
+
+export const findSessionbyRefreshToken = async (refreshToken) => {
+  return prisma.authSession.findUnique({
+    where: {
+      refreshToken,
+    },
+    include: { user: true },
+  });
+};
+
+export const revokeSession = async (tokenHash) => {
+  await prisma.authSession.update({
+    where: { refreshToken: tokenHash, revokedAt: null },
+    data: {
+      revokedAt: new Date(),
     },
   });
 };

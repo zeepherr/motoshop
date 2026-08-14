@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { config } from "../config";
+import { config } from "../config/index.js";
 import { OTP_RESEND_COOLDOWN_MS } from "../constant/auth.constant.js";
 
 export const generateOtp = () => {

@@ -56,13 +56,17 @@ export const errorHandler = (err, req, res, next) => {
 
   const status = err.status || err.statusCode || 500;
 
-  console.error("ERROR:", err);
+  console.log(`!!!ERROR MDW: status:${status}  & message-->> "${err.message}"`);
 
   return res.status(status).json({
     success: false,
-    message:
-      status === 500
-        ? "Internal server error"
-        : err.message,
+    ...(err.code && { code: err.code }),
+    ...(err.attemptsRemaining !== undefined && {
+      attemptsRemaining: err.attemptsRemaining,
+    }),
+    ...(err.retryAfterSeconds !== undefined && {
+      retryAfterSeconds: err.retryAfterSeconds,
+    }),
+    message: err.message || "Internal server error",
   });
 };

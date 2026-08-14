@@ -26,12 +26,11 @@ export const registerSchema = z
   });
 
 export const loginSchema = z.object({
-  identity: z
+  email: z
     .string()
-    .min(3, "Email or phone-number is required")
-    .refine((value) => emailRegex.test(value) || phoneRegex.test(value), {
-      message: "identity must be a valid email or phone number",
-    }),
+    .trim()
+    .toLowerCase()
+    .email("Please enter a valid email address"),
   password: z.string().min(4, "password required at least 4 characters"),
 });
 

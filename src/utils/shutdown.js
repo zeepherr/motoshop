@@ -1,5 +1,4 @@
-import { prisma } from "../lib/prisma.js";
-
+import { prisma } from "../lib/primsa.js";
 export async function shutdown(server, signal) {
   console.log(`${signal} received. Shutting down...`);
 

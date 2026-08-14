@@ -1,6 +1,6 @@
 import "dotenv/config";
 import app from "./app.js";
-import { config } from "./utils/config.util.js";
+import {config} from "./config/index.js"
 import { shutdown } from "./utils/shutdown.js";
 
 const PORT = config.port;

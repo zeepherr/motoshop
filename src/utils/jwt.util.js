@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import crypto from "node:crypto";
-import { config } from "../config";
+import { config } from "../config/index.js";
 export const createAccessToken = async (user) => {
   const payload = { id: user.id, role: user.role };
   const token = jwt.sign(payload, config.jwt_secret, {
