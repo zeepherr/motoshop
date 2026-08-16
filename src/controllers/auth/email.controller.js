@@ -1,6 +1,7 @@
 import createHttpError from "http-errors";
-import { OTP_TTL_MS } from "../../constant/auth.constant.js";
+import { MAX_OTP_ATTEMPTS, OTP_TTL_MS } from "../../constant/auth.constant.js";
 import {
+  addAttemptsPending,
   cleanExpirePending,
   createUserFromPending,
   findPendingUser,
@@ -35,15 +36,36 @@ export const verifyRegistrationEmail = async (req, res, next) => {
       ),
     );
   }
-  if (pending.attempts >= 5) {
+  if (pending.attempts >= MAX_OTP_ATTEMPTS) {
     //check remaning apptempt
     const error = createHttpError(
       429,
       "Too many incorrect attempts. Please request a new verification code.",
-      { code: "TOO_MANY_VERIFICATION_ATTEMPTS" },
     );
     error.code = "TOO_MANY_VERIFICATION_ATTEMPTS";
     error.attemptsRemaining = 0;
+    return next(error);
+  }
+  const submittedHash = hashOtp(code);
+  if (submittedHash !== pending.otpHash) {
+    const newAttempt = pending.attempts + 1;
+    await addAttemptsPending(pending.id);
+    const attemptsRemaining = Math.max(0, MAX_OTP_ATTEMPTS - newAttempt);
+    if (attemptsRemaining === 0) {
+      const error = createHttpError(
+        429,
+        "Too many incorrect attempts,Please try again later!",
+      );
+      error.code = "TOO_MANY_VERIFICATION_ATTEMPTS";
+      error.attemptsRemaining = 0;
+      return next(error);
+    }
+    const error = createHttpError(
+      400,
+      "Incorrect verification code .Please try again",
+    );
+    error.code = "INVALID_VERIFICATION_CODE";
+    error.attemptsRemaining = attemptsRemaining;
     return next(error);
   }
   const pendindUser = await createUserFromPending(pending);
@@ -87,11 +109,13 @@ export const resendEmailOtp = async (req, res, next) => {
 
   await updatePendingOtp({ email, otpHash, expiresAt });
   await sendRegistrationOtp(email, otp); //resend to user
-
+  const resendAvailableAt = new Date(Date.now() + 60 * 1000);
   return res.status(200).json({
     success: true,
+    code: "VERIFICATION_CODE_RESENT",
     message: "A new verificatioin code has sent to your eamil.",
     expiresAt,
-    resendAfterSecond: 60,
+    resendAvailableAt,
+    resendAfterSeconds: 60,
   });
 };

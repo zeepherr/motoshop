@@ -114,10 +114,18 @@ export const findSessionbyRefreshToken = async (refreshToken) => {
 };
 
 export const revokeSession = async (tokenHash) => {
-  await prisma.authSession.update({
+  await prisma.authSession.updateMany({
     where: { refreshToken: tokenHash, revokedAt: null },
     data: {
       revokedAt: new Date(),
+    },
+  });
+};
+export const addAttemptsPending = async (pendingId) => {
+  await prisma.pendingRegistration.update({
+    where: { id: pendingId },
+    data: {
+      attempts: { increment: 1 },
     },
   });
 };

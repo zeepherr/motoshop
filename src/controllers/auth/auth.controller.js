@@ -128,7 +128,7 @@ export const logout = async (req, res, next) => {
     sameSite: "lax",
     path: "/api/v1/auth",
   });
-  res.statu(200).json({
+  res.status(200).json({
     message: "Logout Sccessfully",
   });
 };
