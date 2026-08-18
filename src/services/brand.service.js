@@ -2,8 +2,12 @@ import { prisma } from "../lib/primsa.js";
 
 export const findBrandBy = async (column, value) => {
   return await prisma.motorBrand.findFirst({
+    where: { [column]: value, isActive: true },
+  });
+};
+export const findBrandByAdmin = async (column, value) => {
+  return await prisma.motorBrand.findFirst({
     where: { [column]: value },
-    select: { isActive: true },
   });
 };
 
@@ -13,19 +17,13 @@ export const addBrand = async (brandName) => {
   });
 };
 
-export const findAllBrandUser = async () => {
-  return await prisma.motorBrand.findMany({ where: { isActive: true } });
+export const findAllBrands = async (where = {}) => {
+  return await prisma.motorBrand.findMany({ where });
 };
-
-export const findAllBrandAdmin = async () => {
-  return await prisma.motorBrand.findMany({ include: { isActive: false } });
-};
-export const updateBrandBy = async (brandId, column, value) => {
+export const setBrand = async (brandId, data) => {
   return await prisma.motorBrand.update({
     where: { id: brandId },
-    data: {
-      [column]: value,
-    },
+    data,
   });
 };
 

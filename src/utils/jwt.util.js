@@ -26,3 +26,15 @@ export const createRefreshToken = async () => {
 export const hashRefreshToken = async (token) => {
   return crypto.createHash("sha256").update(token).digest("hex"); //this is not encrypted mean can not be turn to "original"
 };
+
+export const generateSku = (name) => {
+  const prefix = name
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "")
+    .slice(0, 4);
+
+  const random = Math.floor(1000 + Math.random() * 9000);
+
+  return `${prefix}-${random}`;
+};

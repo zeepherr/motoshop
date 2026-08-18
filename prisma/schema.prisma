@@ -43,9 +43,7 @@ enum OrderItemType {
   SERVICE
 }
 
-// ======================================================
 // USER
-// ======================================================
 
 model User {
   id   Int      @id @default(autoincrement())
@@ -74,9 +72,7 @@ model User {
   authSessions AuthSession[]
 }
 
-// ======================================================
 // USER INFO
-// ======================================================
 
 model UserInfo {
   id Int @id @default(autoincrement())
@@ -91,10 +87,8 @@ model UserInfo {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-// ======================================================
 // AUTH SESSION
 // Refresh token / logout / session management
-// ======================================================
 
 model AuthSession {
   id Int @id @default(autoincrement())
@@ -116,10 +110,8 @@ model AuthSession {
   @@index([expiresAt])
 }
 
-// ======================================================
 // PENDING REGISTRATION
 // Email OTP verification before User creation
-// ======================================================
 
 model PendingRegistration {
   id Int @id @default(autoincrement())
@@ -141,10 +133,8 @@ model PendingRegistration {
   updatedAt DateTime @updatedAt
 }
 
-// ======================================================
 // MOTOR BRAND
 // Admin controlled motorcycle brands
-// ======================================================
 
 model MotorBrand {
   id Int @id @default(autoincrement())
@@ -160,10 +150,8 @@ model MotorBrand {
   motors Motor[]
 }
 
-// ======================================================
 // MOTOR
 // Admin controlled motorcycle model catalog
-// ======================================================
 
 model Motor {
   id Int @id @default(autoincrement())
@@ -189,10 +177,8 @@ model Motor {
   @@index([motorBrandId])
 }
 
-// ======================================================
 // USER MOTOR
 // Member <-> Motorcycle model relationship
-// ======================================================
 
 model UserMotor {
   id Int @id @default(autoincrement())
@@ -213,9 +199,7 @@ model UserMotor {
   @@index([motorId])
 }
 
-// ======================================================
 // PRODUCT CATEGORY
-// ======================================================
 
 model ProductCategory {
   id Int @id @default(autoincrement())
@@ -231,9 +215,7 @@ model ProductCategory {
   products Product[]
 }
 
-// ======================================================
 // PRODUCT
-// ======================================================
 
 model Product {
   id Int @id @default(autoincrement())
@@ -264,9 +246,7 @@ model Product {
   @@index([productCategoryId])
 }
 
-// ======================================================
 // SERVICE
-// ======================================================
 
 model Service {
   id Int @id @default(autoincrement())
@@ -285,10 +265,8 @@ model Service {
   orderItems OrderItem[]
 }
 
-// ======================================================
 // ORDER
 // POS transaction
-// ======================================================
 
 model Order {
   id Int @id @default(autoincrement())
@@ -336,10 +314,8 @@ model Order {
   @@index([status])
 }
 
-// ======================================================
 // ORDER ITEM
 // Product or Service inside cart/order
-// ======================================================
 
 model OrderItem {
   id Int @id @default(autoincrement())

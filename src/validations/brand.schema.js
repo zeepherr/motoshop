@@ -14,24 +14,13 @@ export const createMotorBrandSchema = z
   .strict();
 
 // UPDATE NAME
-export const updateMotorBrandSchema = z
-  .object({
-    name: motorBrandName,
-  })
-  .strict();
-
-// UPDATE STATUS
-export const updateMotorBrandStatusSchema = z
-  .object({
-    isActive: z.boolean({
+export const updateMotorBrandSchema = z.object({
+  name: motorBrandName.optional(),
+  isActive: z
+    .boolean({
       error: "isActive must be a boolean",
-    }),
-  })
-  .strict();
-
-  export const motorBrandIdSchema = z.object({
-  id: z.coerce
-    .number()
-    .int()
-    .positive("Invalid motor brand ID"),
+    })
+    .optional(),
 });
+
+

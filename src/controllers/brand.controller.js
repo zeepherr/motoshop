@@ -1,32 +1,44 @@
 import createHttpError from "http-errors";
 import {
   addBrand,
-  findAllBrandAdmin,
-  findAllBrandUser,
+  findAllBrands,
   findBrandBy,
+  findBrandByAdmin,
   removeBrandByid,
-  updateBrandBy,
+  setBrand,
 } from "../services/brand.service.js";
+import { findMototBySelect } from "../services/moto.service.js";
 import {
   createMotorBrandSchema,
   updateMotorBrandSchema,
-  updateMotorBrandStatusSchema,
 } from "../validations/brand.schema.js";
 
-export const getAllBrandUser = async (req, res, next) => {
-  const brands = await findAllBrandUser();
+export const getAllBrands = async (req, res, next) => {
+  const brands = await findAllBrands({ isActive: true });
+  if (brands.length === 0) {
+    return res.status(200).json({
+      message: "No brands found",
+      data: null,
+    });
+  }
   res.status(200).json({
     success: true,
     message: "Get all aviailabel brand",
-    motorBrand: brands,
+    data: brands,
   });
 };
 export const getAllBrandAdmin = async (req, res, next) => {
-  const brands = await findAllBrandAdmin();
+  const brands = await findAllBrands();
+  if (brands.length === 0) {
+    return res.status(200).json({
+      message: "No brand found",
+      data: null,
+    });
+  }
   res.status(200).json({
     success: true,
     message: "Get all motorbrands.",
-    motorBrands: brands,
+    data: brands,
   });
 };
 
@@ -37,7 +49,7 @@ export const getBrandById = async (req, res, next) => {
   return res.status(200).json({
     success: true,
     message: "Get a brand successfully",
-    motorBrand: haveBrand,
+    data: haveBrand,
   });
 };
 
@@ -49,56 +61,56 @@ export const createBrand = async (req, res, next) => {
   res.status(201).json({
     success: true,
     message: "A brand is added.",
-    motorBrand: brand,
+    data: brand,
   });
 };
+
+//review later
 
 export const updateBrand = async (req, res, next) => {
   const id = +req.params.id;
-  const { name } = updateMotorBrandSchema.parse(req.body);
-  const haveBrand = await findBrandBy("id", id);
+  const data = updateMotorBrandSchema.parse(req.body);
+  const haveBrand = await findBrandByAdmin("id", id);
   if (!haveBrand) return next(createHttpError(409, "This brand is not exist."));
-  if (haveBrand.name === name)
-    return next(createHttpError(409, "Please enter a different name."));
-
-  const newName = await updateBrandBy(id, "name", name);
+  if (data.name) {
+    const sameName = await findBrandByAdmin("name", data.name);
+    if (sameName)
+      return next(createHttpError(409, "This name is already exist."));
+  }
+  if (data.isActive === false) {
+    const relatedMots = await findMototBySelect("motorBrandId", id);
+    if (relatedMots)
+      return next(
+        createHttpError(
+          409,
+          "Sorry,This brand is still related to another fields",
+        ),
+      );
+  }
+  const brand = await setBrand(id, data);
   return res.status(200).json({
     success: true,
-    message: "Updated a brand name.",
-    motorBrand: newName,
-  });
-};
-
-export const updateBrandStatus = async (req, res, next) => {
-  const id = +req.params.id;
-  const { isActive } = updateMotorBrandStatusSchema.parse(req.body);
-  const haveBrand = await findBrandBy("id", id);
-  if (!haveBrand) return next(createHttpError(404, "This brand is not exist."));
-  if (haveBrand.isActive === isActive)
-    return next(
-      createHttpError(
-        409,
-        isActive
-          ? "This brand is already active"
-          : "This brand is already inActive",
-      ),
-    );
-
-  const newName = await updateBrandBy(id, "isActive", isActive);
-  return res.status(200).json({
-    success: true,
-    message: "Updated brand status aleady.",
-    motorBrand: newName,
+    message: "Updated a brand",
+    data: brand,
   });
 };
 
 export const deleteBrand = async (req, res, next) => {
   const id = +req.params.id;
-  const haveBrand = await findBrandBy("id", id);
+  const haveBrand = await findBrandByAdmin("id", id);
   if (!haveBrand) return next(createHttpError(409, "This brand is not exist."));
+  const relatedMots = await findMototBySelect("motorBrandId", id);
+  if (relatedMots)
+    return next(
+      createHttpError(
+        409,
+        "Sorry,This brand is still related to another fields",
+      ),
+    );
   await removeBrandByid(id);
   return res.status(200).json({
     success: true,
     message: "This brand has been deleted",
+    data: null,
   });
 };

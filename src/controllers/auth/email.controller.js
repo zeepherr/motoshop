@@ -71,7 +71,7 @@ export const verifyRegistrationEmail = async (req, res, next) => {
   const pendindUser = await createUserFromPending(pending);
   const { password: pw, createdAt, ...userData } = pendindUser;
   return res.status(201).json({
-    message: "Registration successful",
+    message: "Register success.Please Login",
     user: userData,
   });
 };
