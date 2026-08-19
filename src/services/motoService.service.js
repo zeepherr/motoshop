@@ -1,22 +1,22 @@
 import { prisma } from "../lib/primsa.js";
 
+export const addService = async (data) => {
+  return await prisma.service.create({
+    data,
+  });
+};
 export const findAllServices = async (where = {}) => {
   return await prisma.service.findMany({ where });
 };
 
-export const findServiceBy = async (column, value) => {
+export const findServiceByAdmin = async (column, value) => {
   return await prisma.service.findFirst({
     where: { [column]: value },
   });
 };
-
-export const addService = async (servName, servDescription, servPrice) => {
-  return await prisma.service.create({
-    data: {
-      name: servName,
-      price: servPrice,
-      description: servDescription,
-    },
+export const findServiceBy = async (column, value) => {
+  return await prisma.service.findFirst({
+    where: { [column]: value, isActive: true },
   });
 };
 

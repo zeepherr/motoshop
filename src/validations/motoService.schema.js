@@ -11,6 +11,7 @@ export const createServiceSchema = z.object({
     .string()
     .trim()
     .max(500, "Description must not exceed 500 characters")
+    .nullable()
     .optional(),
 
   price: z.coerce //converter to number
@@ -20,4 +21,6 @@ export const createServiceSchema = z.object({
     .positive("Price must be greater than 0"),
 });
 
-export const updateServiceSchema = createServiceSchema.partial(); //some part of create
+export const updateServiceSchema = createServiceSchema.partial().extend({
+  isActive: z.boolean({ error: "isActive must be a boolean" }).optional(),
+});

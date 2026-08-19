@@ -17,7 +17,7 @@ export const getAllMoto = async (req, res, next) => {
   const motos = await findAllMotos({ isActive: true });
   if (motos.length === 0) {
     return res.status(200).json({
-      message: "No motors found",
+      messsage: "No available found.",
       data: null,
     });
   }
@@ -31,8 +31,8 @@ export const getAllMoto = async (req, res, next) => {
 export const getAllMotoAdmin = async (req, res, next) => {
   const motos = await findAllMotos();
   if (motos.length === 0) {
-    return res.status(200).json({
-      message: "No motors found",
+    return res.status(204).json({
+      messsage: "No available found.",
       data: null,
     });
   }
@@ -46,7 +46,8 @@ export const getAllMotoAdmin = async (req, res, next) => {
 export const getMotoBy = async (req, res, next) => {
   const id = +req.params.id;
   const haveMoto = await findMototBy("id", id);
-  if (!haveMoto) return next(createHttpError(404, "This moto is not exist"));
+  if (!haveMoto)
+    return next(createHttpError(404, "This moto is not available"));
   return res.status(200).json({
     success: true,
     message: "Get a moto Successfully",
@@ -56,7 +57,7 @@ export const getMotoBy = async (req, res, next) => {
 
 export const createMoto = async (req, res, next) => {
   const { model, motorBrandId, type } = createMotorSchema.parse(req.body);
-  const haveMoto = await findMototBy("model", model);
+  const haveMoto = await findMototByAdmin("model", model);
   if (haveMoto)
     return next(createHttpError(409, "This moto is already exist."));
   const motorBrand = await findBrandBy("id", motorBrandId);

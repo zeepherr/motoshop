@@ -14,7 +14,29 @@ export const setProduct = async (productId, data) => {
 };
 
 export const findAllProducts = async (where = {}) => {
-  return await prisma.product.findMany({ where });
+  return await prisma.product.findMany({
+    where,
+    select: {
+      id: true,
+      name: true,
+      updatedAt: true,
+      imgUrl: true,
+      isActive: true,
+      productCategoryId: true,
+      sellingPrice: true,
+      costPrice: true,
+      sku: true,
+      stockQuantity: true,
+      unit: true,
+
+      productCategory: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  });
 };
 
 export const findProductBy = async (column, value) => {

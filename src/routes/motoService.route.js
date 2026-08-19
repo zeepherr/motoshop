@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createService,
+  deleteService,
   getAllService,
   getAllServiceAdmin,
   getServiceBy,
@@ -23,5 +24,11 @@ router.patch(
   validateParams(paramId),
   allowRoles("ADMIN"),
   updateService,
+);
+router.delete(
+  "/:id",
+  validateParams(paramId),
+  allowRoles("ADMIN"),
+  deleteService,
 );
 export default router;

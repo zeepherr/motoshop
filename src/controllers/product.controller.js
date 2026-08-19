@@ -18,7 +18,7 @@ import {
 export const getAllProduct = async (req, res, next) => {
   const products = await findAllProducts({ isActive: true });
   if (products.length === 0) {
-    return res.status(200).json({
+    return res.status(204).json({
       messsage: "No available found.",
     });
   }
@@ -32,8 +32,9 @@ export const getAllProduct = async (req, res, next) => {
 export const getAllProductAdmin = async (req, res, next) => {
   const products = await findAllProducts();
   if (products.length === 0) {
-    return res.status(200).json({
+    return res.status(204).json({
       messsage: "No available found.",
+      data: null,
     });
   }
   res.status(200).json({
@@ -47,7 +48,7 @@ export const getProductBy = async (req, res, next) => {
   const { id } = paramId.parse(req.params);
   const haveProduct = await findProductBy("id", id);
   if (!haveProduct)
-    return next(createHttpError(404, "This product is not exist."));
+    return next(createHttpError(404, "This product is not available."));
   return res.status(200).json({
     success: true,
     message: "Get a product successfully",
@@ -74,7 +75,7 @@ export const createProduct = async (req, res, next) => {
   res.status(201).json({
     success: true,
     message: "A product is added",
-    pruduct: newProduct,
+    data: newProduct,
   });
 };
 
@@ -84,11 +85,14 @@ export const updateProduct = async (req, res, next) => {
   if (!haveProduct)
     return next(createHttpError(404, "This product is not exist."));
   const data = updateProductSehcma.parse(req.body);
+  if (Object.keys(data).length === 0) {
+    return next(createHttpError(400, "No changes were provided."));
+  }
   if (data.sku && data.sku !== haveProduct.sku) {
     const haveSku = await findProductByAdmin("sku", data.sku);
     if (haveSku) return next(createHttpError(409, "This SKU is already exist"));
   }
-  if (data.productCategoryId) {
+  if (data.productCategoryId !== undefined) {
     const catExist = await findCategoryBy("id", data.productCategoryId);
     if (!catExist)
       return next(createHttpError(400, "The given category is not found."));
@@ -97,7 +101,7 @@ export const updateProduct = async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "Updated",
-    porduct: prod,
+    data: prod,
   });
 };
 
@@ -112,5 +116,6 @@ export const deleteProduct = async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "Deletd successfully",
+    data: null,
   });
 };

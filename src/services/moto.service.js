@@ -5,15 +5,15 @@ export const addMoto = async (modelName, brandId, motoType) => {
     data: { model: modelName, motorBrandId: brandId, type: motoType },
   });
 };
+export const findMototByAdmin = async (column, value) => {
+  return await prisma.motor.findFirst({
+    where: { [column]: value },
+  });
+};
 
 export const findMototBy = async (column, value) => {
   return await prisma.motor.findFirst({
     where: { [column]: value, isActive: true },
-  });
-};
-export const findMototByAdmin = async (column, value) => {
-  return await prisma.motor.findFirst({
-    where: { [column]: value },
   });
 };
 export const findMototBySelect = async (column, value) => {
@@ -32,6 +32,7 @@ export const findAllMotos = async (where = {}) => {
       id: true,
       model: true,
       motorBrandId: true,
+      updatedAt: true,
       isActive: true,
 
       motorBrand: {
