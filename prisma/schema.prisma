@@ -231,8 +231,8 @@ model Product {
 
   stockQuantity Int @default(0)
 
-  unit   String
-  imgUrl String?
+  unit     String
+  imageKey String?
 
   isActive Boolean @default(true)
 

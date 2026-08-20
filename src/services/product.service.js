@@ -20,7 +20,7 @@ export const findAllProducts = async (where = {}) => {
       id: true,
       name: true,
       updatedAt: true,
-      imgUrl: true,
+      imageKey: true,
       isActive: true,
       productCategoryId: true,
       sellingPrice: true,
@@ -45,9 +45,21 @@ export const findProductBy = async (column, value) => {
   });
 };
 export const findProductByAdmin = async (column, value) => {
-  return await prisma.product.findFirst({
+  return await prisma.product.findUnique({
     where: { [column]: value },
-    select: { id: true },
+    select: {
+      id: true,
+      productCategoryId: true,
+      name: true,
+      sku: true,
+      description: true,
+      costPrice: true,
+      sellingPrice: true,
+      stockQuantity: true,
+      unit: true,
+      imageKey: true, // ✅ important
+      isActive: true,
+    },
   });
 };
 

@@ -116,6 +116,5 @@ export const resendEmailOtp = async (req, res, next) => {
     message: "A new verificatioin code has sent to your eamil.",
     expiresAt,
     resendAvailableAt,
-    resendAfterSeconds: 60,
   });
 };

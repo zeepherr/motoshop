@@ -9,6 +9,8 @@ import {
   updateProduct,
 } from "../controllers/product.controller.js";
 import { authenticate } from "../middlewares/authenticate.middleware.js";
+import { upload } from "../middlewares/upload.middleware.js";
+import { validateImage } from "../middlewares/validate-image.middleware.js";
 import { allowRoles } from "./../middlewares/authorize.middleware.js";
 
 const router = express.Router();
@@ -17,8 +19,20 @@ router.get("/all", getAllProduct);
 router.get("/all-products", allowRoles("ADMIN"), getAllProductAdmin);
 router.get("/:id", getProductBy);
 
-router.post("/", allowRoles("ADMIN"), createProduct);
-router.patch("/:id", allowRoles("ADMIN"), updateProduct);
+router.post(
+  "/",
+  allowRoles("ADMIN"),
+  upload.single("image"),
+  validateImage,
+  createProduct,
+);
+router.patch(
+  "/:id",
+  allowRoles("ADMIN"),
+  upload.single("image"),
+  validateImage,
+  updateProduct,
+);
 router.delete("/:id", allowRoles("ADMIN"), deleteProduct);
 
 export default router;

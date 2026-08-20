@@ -1,3 +1,4 @@
+import { MulterError } from "multer";
 import { ZodError } from "zod";
 import { Prisma } from "../generated/prisma/client.js";
 
@@ -20,13 +21,16 @@ export const errorHandler = (err, req, res, next) => {
 
   // Zod
   if (err instanceof ZodError) {
+    const errors = err.issues.map((issue) => ({
+      field: issue.path.length ? issue.path.join(".") : "request",
+      message: issue.message,
+    }));
+
     return res.status(400).json({
       success: false,
+      code: "VALIDATION_ERROR",
       message: "Validation error",
-      errors: err.issues.map((issue) => ({
-        field: issue.path?.[0] || "request",
-        message: issue.message,
-      })),
+      errors,
     });
   }
 
@@ -54,6 +58,32 @@ export const errorHandler = (err, req, res, next) => {
     }
   }
 
+  //multer
+  if (err instanceof MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res.status(413).json({
+        success: false,
+        code: "IMAGE_TOO_LARGE",
+        message: "Image must not exceed 5 MB.",
+      });
+    }
+
+    if (err.code === "LIMIT_FILE_COUNT") {
+      return res.status(400).json({
+        success: false,
+        code: "TOO_MANY_IMAGES",
+        message: "Only one image can be uploaded.",
+      });
+    }
+
+    if (err.code === "LIMIT_UNEXPECTED_FILE") {
+      return res.status(400).json({
+        success: false,
+        code: "UNEXPECTED_FILE_FIELD",
+        message: "Unexpected file field.",
+      });
+    }
+  }
   const status = err.status || err.statusCode || 500;
 
   console.log(`!!!ERROR MDW: status:${status}  & message-->> "${err.message}"`);

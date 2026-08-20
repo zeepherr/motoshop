@@ -7,12 +7,13 @@ export const createProductSchema = z.object({
     .min(1, "Product name is required")
     .max(100, "Product name must not exceed 100 characters"),
 
-  sku: z
-    .string()
-    .trim()
-    .min(1, "SKU is required")
-    .max(50, "SKU must not exceed 50 characters")
-    .optional(),
+  sku: z.preprocess((value) => {
+    if (typeof value === "string" && value.trim() === "") {
+      return undefined;
+    }
+
+    return value;
+  }, z.string().trim().max(50, "SKU must not exceed 50 characters").optional()),
 
   description: z
     .string()
@@ -39,12 +40,22 @@ export const createProductSchema = z.object({
     })
     .positive("Selling price must be greater than 0"),
 
-  stockQuantity: z.coerce
-    .number({
-      error: "Stock quantity must be a number",
-    })
-    .int("Stock quantity must be a whole number")
-    .min(0, "Stock quantity cannot be negative"),
+  stockQuantity: z.preprocess(
+    (value) => {
+      if (value === "" || value === null || value === undefined) {
+        return undefined;
+      }
+
+      return value;
+    },
+    z.coerce
+      .number({
+        error: "Stock quantity must be a number",
+      })
+      .int("Stock quantity must be a whole number")
+      .min(0, "Stock quantity cannot be negative")
+      .optional(),
+  ),
 
   productCategoryId: z.coerce
     .number({
@@ -54,6 +65,19 @@ export const createProductSchema = z.object({
     .positive("Invalid product category"),
 });
 
+const optionalBoolean = z.preprocess(
+  (value) => {
+    if (value === "true") return true;
+    if (value === "false") return false;
+
+    return value;
+  },
+  z
+    .boolean({
+      error: "isActive must be a boolean",
+    })
+    .optional(),
+);
 export const updateProductSehcma = createProductSchema.partial().extend({
-  isActive: z.boolean({ error: "isActive must be a boolean" }).optional(),
+  isActive: optionalBoolean,
 });
