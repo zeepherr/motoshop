@@ -44,6 +44,7 @@ export const findProductBy = async (column, value) => {
     where: { [column]: value, isActive: true },
   });
 };
+
 export const findProductByAdmin = async (column, value) => {
   return await prisma.product.findUnique({
     where: { [column]: value },
@@ -66,5 +67,54 @@ export const findProductByAdmin = async (column, value) => {
 export const removeProduct = async (productId) => {
   await prisma.product.delete({
     where: { id: productId },
+  });
+};
+
+//fororder
+export const findProductForOrder = async (productId) => {
+  return await prisma.product.findUnique({
+    where: {
+      id: productId,
+      isActive: true,
+    },
+    select: {
+      id: true,
+      name: true,
+      sellingPrice: true,
+      stockQuantity: true,
+      isActive: true,
+    },
+  });
+};
+
+export const decreaseProductStock = async (tx, productId, quantity) => {
+  return await tx.product.updateMany({
+    where: {
+      id: productId,
+      isActive: true,
+      stockQuantity: {
+        gte: quantity,
+      },
+    },
+    data: {
+      stockQuantity: {
+        decrement: quantity,
+      },
+    },
+  });
+};
+
+export const findProductForOrderTx = async (tx, productId) => {
+  return prisma.product.findUnique({
+    where: {
+      id: productId,
+      isActive: true,
+    },
+    select: {
+      id: true,
+      name: true,
+      sellingPrice: true,
+      stockQuantity: true,
+    },
   });
 };

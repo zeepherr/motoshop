@@ -1,7 +1,6 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
-import uploadTestRoutes from "../src/config/seripts/upload-test-routes.js";
 import { corsOptions } from "./config/index.js";
 import { errorHandler } from "./middlewares/error.middleware.js";
 import { notFound } from "./middlewares/notFound.middleware.js";
@@ -11,6 +10,7 @@ import brandRouter from "./routes/brand.route.js";
 import categoryRouter from "./routes/category.route.js";
 import motorRouter from "./routes/motor.route.js";
 import serviceRouter from "./routes/motoService.route.js";
+import orderRouter from "./routes/order.route.js";
 import productRouter from "./routes/product.route.js";
 import userRouter from "./routes/user.route.js";
 
@@ -27,7 +27,7 @@ app.use("/api/v1/motors", motorRouter);
 app.use("/api/v1/services", serviceRouter);
 app.use("/api/v1/categories", categoryRouter);
 app.use("/api/v1/products", productRouter);
-app.use("/api/v1/test-upload", uploadTestRoutes);
+app.use("/api/v1/orders", orderRouter);
 
 app.use(notFound);
 app.use(errorHandler);

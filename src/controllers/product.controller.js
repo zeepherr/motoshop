@@ -18,7 +18,8 @@ import {
   createProductSchema,
   updateProductSehcma,
 } from "../validations/product.schema.js";
-
+import { prisma } from "../lib/primsa.js";
+//find
 export const getAllProduct = async (req, res, next) => {
   const products = await findAllProducts({ isActive: true });
   if (products.length === 0) {
@@ -61,6 +62,10 @@ export const getProductBy = async (req, res, next) => {
   });
 };
 
+
+
+
+//create
 export const createProduct = async (req, res, next) => {
   const data = createProductSchema.parse(req.body);
   if (data.sku) {
@@ -106,6 +111,7 @@ export const createProduct = async (req, res, next) => {
   });
 };
 
+//update
 export const updateProduct = async (req, res, next) => {
   const { id } = paramId.parse(req.params);
   const haveProduct = await findProductByAdmin("id", id);
@@ -171,6 +177,8 @@ export const updateProduct = async (req, res, next) => {
   });
 };
 
+
+//delete
 //review later
 export const deleteProduct = async (req, res, next) => {
   const { id } = paramId.parse(req.params);
@@ -204,3 +212,5 @@ export const deleteProduct = async (req, res, next) => {
     data: null,
   });
 };
+
+

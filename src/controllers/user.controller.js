@@ -1,4 +1,4 @@
-import { findAllUser } from "../services/auth/user.service.js";
+import { findAllUser } from "../services/user.service.js";
 
 export const getAlluser = async (req, res, next) => {
   const users = await findAllUser();

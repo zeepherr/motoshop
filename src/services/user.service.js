@@ -1,4 +1,4 @@
-import { prisma } from "../../lib/primsa.js";
+import { prisma } from "../lib/primsa.js";
 
 export const getUser = async (colum, value) => {
   return await prisma.user.findFirst({
@@ -100,6 +100,28 @@ export const findAllUser = async () => {
         select: {
           photoUrl: true,
         },
+      },
+    },
+  });
+};
+
+//for order
+
+export const findMemberForOrder = async (memberId) => {
+  return await prisma.user.findUnique({
+    where: {
+      id: memberId,
+      isActive: true,
+      role: "MEMBER",
+    },
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      role: true,
+      isActive: true,
+      userMotors: {
+        select: { motorId: true },
       },
     },
   });

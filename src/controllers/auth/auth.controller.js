@@ -6,7 +6,7 @@ import {
   revokeSession,
   savePendingRegistration,
 } from "../../services/auth/auth.service.js";
-import { getUser, getUserBy } from "../../services/auth/user.service.js";
+import { getUser, getUserBy } from "../../services/user.service.js";
 import { refreshCookieOptions } from "../../utils/cookie.util.js";
 import {
   hashValidMailDomain,

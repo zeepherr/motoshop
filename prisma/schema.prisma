@@ -12,6 +12,11 @@ datasource db {
   provider = "postgresql"
 }
 
+enum PaymentMethod {
+  CASH
+  QR
+}
+
 // ======================================================
 // ENUMS
 // ======================================================
@@ -293,7 +298,9 @@ model Order {
 
   finalTotal Decimal @db.Decimal(10, 2)
 
-  status OrderStatus @default(PENDING)
+  status         OrderStatus    @default(PENDING)
+  paymentMethod  PaymentMethod?
+  receivedAmount Decimal?       @db.Decimal(10, 2)
 
   createdAt   DateTime  @default(now())
   completedAt DateTime?

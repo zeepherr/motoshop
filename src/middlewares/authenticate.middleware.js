@@ -1,5 +1,5 @@
 import createHttpError from "http-errors";
-import { getUserBy } from "../services/auth/user.service.js";
+import { getUserBy } from "../services/user.service.js";
 import { verifyAccessToken } from "../utils/jwt.util.js";
 
 export const authenticate = async (req, res, next) => {

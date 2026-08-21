@@ -32,3 +32,33 @@ export const removeServ = async (servId) => {
     where: { id: servId },
   });
 };
+
+//for order
+export const findServiceForOrder = async (serviceId) => {
+  return await prisma.service.findUnique({
+    where: {
+      id: serviceId,
+      isActive: true,
+    },
+    select: {
+      id: true,
+      name: true,
+      price: true,
+      isActive: true,
+    },
+  });
+};
+
+export const findServiceForOrderTx = async (tx, serviceId) => {
+  return await tx.service.findUnique({
+    where: {
+      id: serviceId,
+      isActive: true,
+    },
+    select: {
+      id: true,
+      name: true,
+      price: true,
+    },
+  });
+};

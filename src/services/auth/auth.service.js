@@ -1,7 +1,7 @@
 import createHttpError from "http-errors";
 import { PENDING_REGISTRATION_RETENTION_MS } from "../../constant/auth.constant.js";
 import { prisma } from "../../lib/primsa.js";
-import { createUser, getUserBy } from "./user.service.js";
+import { createUser, getUserBy } from "../user.service.js";
 export const savePendingRegistration = async (data) => {
   //using upsert if existing user -> update data , if not --> create new
   return prisma.pendingRegistration.upsert({
