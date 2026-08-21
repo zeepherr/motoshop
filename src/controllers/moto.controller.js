@@ -73,10 +73,12 @@ export const createMoto = async (req, res, next) => {
 };
 
 export const updateMoto = async (req, res, next) => {
+  console.log(req.body);
   const motoId = +req.params.id;
   const haveMoto = await findMototByAdmin("id", motoId);
   if (!haveMoto) return next(createHttpError(404, "This moto is not exist."));
   const data = updateMotorSchema.parse(req.body);
+  console.log(data);
   if (Object.keys(data).length === 0) {
     return next(createHttpError(400, "No changes were provided."));
   }

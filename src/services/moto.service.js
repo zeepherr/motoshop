@@ -32,6 +32,7 @@ export const findAllMotos = async (where = {}) => {
       id: true,
       model: true,
       motorBrandId: true,
+      type: true,
       updatedAt: true,
       isActive: true,
 

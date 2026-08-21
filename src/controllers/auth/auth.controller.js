@@ -6,7 +6,7 @@ import {
   revokeSession,
   savePendingRegistration,
 } from "../../services/auth/auth.service.js";
-import { getUserBy } from "../../services/auth/user.service.js";
+import { getUser, getUserBy } from "../../services/auth/user.service.js";
 import { refreshCookieOptions } from "../../utils/cookie.util.js";
 import {
   hashValidMailDomain,
@@ -134,13 +134,10 @@ export const logout = async (req, res, next) => {
 };
 
 export const getMe = async (req, res, next) => {
-  const userData = req.user;
+  const user = await getUser("email", req.user.email);
+  console.log(user);
   res.status(200).json({
     message: "Get user details",
-    user: {
-      id: userData.id,
-      email: userData.email,
-      role: userData.role,
-    },
+    user: user,
   });
 };
