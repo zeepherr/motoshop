@@ -1,11 +1,12 @@
 import express from "express";
-import { getAlluser } from "../controllers/user.controller.js";
+import { getAlluser, updateUserRole } from "../controllers/user.controller.js";
 import { authenticate } from "../middlewares/authenticate.middleware.js";
 import { allowRoles } from "../middlewares/authorize.middleware.js";
 
 const router = express.Router();
 router.use(authenticate);
 router.get("/all-users", allowRoles("ADMIN"), getAlluser);
+router.patch("/:id/role", allowRoles("ADMIN"), updateUserRole);
 
 // router.get("/me", getMyInFo);
 // router.patch("/me", updateMe);

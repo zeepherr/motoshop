@@ -105,6 +105,76 @@ export const findAllUser = async () => {
   });
 };
 
+export const findUsersForManagement = async () => {
+  return await prisma.user.findMany({
+    where: {
+      role: {
+        not: "ADMIN",
+      },
+    },
+
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+      phone: true,
+      role: true,
+      isActive: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+};
+
+export const findUserForRoleManagement = async (userId) => {
+  return await prisma.user.findFirst({
+    where: {
+      id: userId,
+
+      role: {
+        not: "ADMIN",
+      },
+    },
+
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+      phone: true,
+      role: true,
+      isActive: true,
+    },
+  });
+};
+
+export const changeUserRole = async (userId, role) => {
+  return await prisma.user.update({
+    where: {
+      id: userId,
+    },
+
+    data: {
+      role,
+    },
+
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+      phone: true,
+      role: true,
+      isActive: true,
+      updatedAt: true,
+    },
+  });
+};
 //for order
 
 export const findMemberForOrder = async (memberId) => {

@@ -2,6 +2,7 @@ import createHttpError from "http-errors";
 import { findBrandBy } from "../services/brand.service.js";
 import {
   addMoto,
+  countMotorRelations,
   findAllMotos,
   findMototBy,
   findMototByAdmin,
@@ -106,6 +107,24 @@ export const deleteMoto = async (req, res, next) => {
   const id = +req.params.id;
   const haveMoto = await findMototByAdmin("id", id);
   if (!haveMoto) return next(createHttpError(409, "This moto is not exist."));
+  const relation = await countMotorRelations(id);
+  if (relation.orders > 0) {
+    return next(
+      createHttpError(
+        409,
+        "This motorcycle has order history and cannot be deleted.",
+      ),
+    );
+  }
+
+  if (relation.users > 0) {
+    return next(
+      createHttpError(
+        409,
+        "This motorcycle is assigned to existing users and cannot be deleted.",
+      ),
+    );
+  }
   await removeMoto(id);
   return res.status(200).json({
     success: true,

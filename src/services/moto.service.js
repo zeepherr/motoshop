@@ -56,3 +56,24 @@ export const setMoto = async (motoId, data) => {
 export const removeMoto = async (motoId) => {
   await prisma.motor.delete({ where: { id: motoId } });
 };
+
+export const countMotorRelations = async (motorId) => {
+  const [orders, users] = await Promise.all([
+    prisma.order.count({
+      where: {
+        motorId,
+      },
+    }),
+
+    prisma.user.count({
+      where: {
+        motorId,
+      },
+    }),
+  ]);
+
+  return {
+    orders,
+    users,
+  };
+};
